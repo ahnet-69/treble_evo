@@ -1,0 +1,32 @@
+From 5228bd877689621237d5da1393a4f08457bf9488 Mon Sep 17 00:00:00 2001
+From: ahnet-69 <syedmusicrealise@gmail.com>
+Date: Wed, 18 Oct 2023 14:18:44 +0500
+Subject: [PATCH] Remove duplicated ro.adb.secure props
+
+I am not even sure how it errors but doing this somehow fixes it
+---
+ config/common.mk | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/config/common.mk b/config/common.mk
+index d4c152f..bf72a23 100644
+--- a/config/common.mk
++++ b/config/common.mk
+@@ -63,13 +63,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
+     drm.service.enabled=true \
+     media.mediadrmservice.enable=true
+ 
+-ifeq ($(TARGET_BUILD_VARIANT),eng)
+ # Disable ADB authentication
+ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += ro.adb.secure=0
+-else
+-# Enable ADB authentication
+-PRODUCT_SYSTEM_DEFAULT_PROPERTIES += ro.adb.secure=1
+ 
++ifneq ($(TARGET_BUILD_VARIANT),eng)
+ # Disable extra StrictMode features on all non-engineering builds
+ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += persist.sys.strictmode.disable=true
+ endif
+-- 
+2.42.0
+
