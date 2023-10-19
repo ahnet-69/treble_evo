@@ -4,8 +4,6 @@ $(call inherit-product, vendor/evolution/config/BoardConfigSoong.mk)
 $(call inherit-product, device/evolution/sepolicy/common/sepolicy.mk)
 -include vendor/evolution/build/core/config.mk
 
-BOARD_EXT4_SHARE_DUP_BLOCKS := true
-
 TARGET_NO_KERNEL_OVERRIDE := true
 
 TARGET_NO_KERNEL_IMAGE := true
