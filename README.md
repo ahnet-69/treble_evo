@@ -36,7 +36,7 @@ Copy the patches folder to the ROM folder, and run this in the ROM folder:
 patches/apply-patches.sh . trebledroid
 ```
 
-Repeat the command for each folder in the patches folder (e.g. personal) by replacing trebledroid with the folder name.
+Repeat the command for personal, ponces in the patches folder in the order. (e.g. personal then ponces) by replacing trebledroid with the folder name.
 
 #### NOTE: It is recommended to apply patches manually by going to the respective directory of the patches, and applying them by using `git am`, as the script often skips applying critical patches for some reason.
 
