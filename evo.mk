@@ -13,3 +13,6 @@ SELINUX_IGNORE_NEVERALLOWS := true
 TARGET_BOOT_ANIMATION_RES := 1080
 
 TARGET_SUPPORTS_QUICK_TAP := true
+
+PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
+    ro.system.ota.json_url=https://raw.githubusercontent.com/ahnet-69/treble_evo/udc/ota.json

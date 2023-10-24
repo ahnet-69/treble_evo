@@ -1,29 +1,29 @@
-From cf30ee029a579c89c7e2bd3a2f5217619225433e Mon Sep 17 00:00:00 2001
+From 2ede07ace49b7c4a3c14d4993d60a8aaa23eb4c6 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Wed, 14 Dec 2022 17:21:00 -0500
-Subject: [PATCH 30/40] Call Samsung's ISehSysInputDev to report screen state
- to touchscreen driver
+Subject: [PATCH] Call Samsung's ISehSysInputDev to report screen state to
+ touchscreen driver
 
 This fixes touchscreen not waking up on Galaxy F23
 ---
  services/core/Android.bp                      |  1 +
- .../server/display/LocalDisplayAdapter.java   | 32 +++++++++++++++++++
- 2 files changed, 33 insertions(+)
+ .../server/display/LocalDisplayAdapter.java   | 31 +++++++++++++++++++
+ 2 files changed, 32 insertions(+)
 
 diff --git a/services/core/Android.bp b/services/core/Android.bp
-index f8d19ec9903d..735959270c11 100644
+index e1f15a78..2c3ec694 100644
 --- a/services/core/Android.bp
 +++ b/services/core/Android.bp
-@@ -186,6 +186,7 @@ java_library_static {
+@@ -187,6 +187,7 @@ java_library_static {
          "com.android.sysprop.watchdog",
          "ImmutabilityAnnotation",
          "securebox",
 +        "vendor.samsung.hardware.sysinput-V1.2-java", // HIDL
+         "vendor.aac.hardware.richtap.vibrator",
      ],
      javac_shard_size: 50,
-     javacflags: [
 diff --git a/services/core/java/com/android/server/display/LocalDisplayAdapter.java b/services/core/java/com/android/server/display/LocalDisplayAdapter.java
-index c7c0fab6140d..537027f2d77f 100644
+index 7701bc62..884c2408 100644
 --- a/services/core/java/com/android/server/display/LocalDisplayAdapter.java
 +++ b/services/core/java/com/android/server/display/LocalDisplayAdapter.java
 @@ -33,6 +33,7 @@ import android.os.Trace;
@@ -52,7 +52,7 @@ index c7c0fab6140d..537027f2d77f 100644
  
          LocalDisplayDevice(IBinder displayToken, long physicalDisplayId,
                  SurfaceControl.StaticDisplayInfo staticDisplayInfo,
-@@ -821,17 +826,44 @@ final class LocalDisplayAdapter extends DisplayAdapter {
+@@ -825,16 +830,42 @@ final class LocalDisplayAdapter extends DisplayAdapter {
                              }
                              mSidekickActive = false;
                          }
@@ -93,10 +93,8 @@ index c7c0fab6140d..537027f2d77f 100644
 +                        }
 +
                          setCommittedState(state);
-+
                          // If we're entering a suspended (but not OFF) power state and we
                          // have a sidekick available, tell it now that it can take control.
-                         if (Display.isSuspendedState(state) && state != Display.STATE_OFF
 -- 
-2.34.1
+2.40.1
 

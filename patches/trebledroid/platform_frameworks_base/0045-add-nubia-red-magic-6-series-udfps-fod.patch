@@ -1,0 +1,175 @@
+From d069a7c78559ce6e313e8c85f44914ec1c7bb895 Mon Sep 17 00:00:00 2001
+From: Huy Hoang <38396158+boydaihungst@users.noreply.github.com>
+Date: Sat, 14 Oct 2023 12:44:36 +0700
+Subject: [PATCH] add: nubia red magic 6 series udfps/fod
+
+---
+ packages/SystemUI/Android.bp                  |  1 +
+ .../systemui/biometrics/UdfpsController.java  | 57 +++++++++++++++++++
+ .../android/systemui/biometrics/UdfpsView.kt  | 14 +++++
+ 3 files changed, 72 insertions(+)
+
+diff --git a/packages/SystemUI/Android.bp b/packages/SystemUI/Android.bp
+index 4b39bfe5..a6ae8a93 100644
+--- a/packages/SystemUI/Android.bp
++++ b/packages/SystemUI/Android.bp
+@@ -200,6 +200,7 @@ android_library {
+         "vendor.goodix.hardware.biometrics.fingerprint-V2.1-java",
+         "vendor.xiaomi.hw.touchfeature-V1.0-java",
+         "vendor.xiaomi.hardware.fingerprintextension-V1.0-java",
++        "vendor.nubia.ifaa-V1.0-java",
+         "bcsmartspace-google",
+         "vendor.lineage.powershare-V1.0-java",
+     ],
+diff --git a/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsController.java b/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsController.java
+index d628737d..94eae6bb 100644
+--- a/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsController.java
++++ b/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsController.java
+@@ -53,6 +53,7 @@ import android.os.Handler;
+ import android.os.PowerManager;
+ import android.os.Process;
+ import android.os.Trace;
++import android.os.SystemProperties;
+ import android.os.UserHandle;
+ import android.os.VibrationAttributes;
+ import android.os.VibrationEffect;
+@@ -119,9 +120,13 @@ import java.util.HashSet;
+ import java.util.Optional;
+ import java.util.Set;
+ import java.util.concurrent.Executor;
++import java.io.File;
++import java.io.FileWriter;
++import java.io.IOException;
+ 
+ import javax.inject.Inject;
+ import javax.inject.Provider;
++import vendor.nubia.ifaa.V1_0.IIfaa;
+ 
+ /**
+  * Shows and hides the under-display fingerprint sensor (UDFPS) overlay, handles UDFPS touch events,
+@@ -267,6 +272,47 @@ public class UdfpsController implements DozeReceiver, Dumpable {
+         }
+     };
+ 
++    // Nubia 6 series fingerprint control command
++    // cmd = 13 -> finger down
++    // cmd = 14 -> after UI ready
++    // cmd = 15 -> finger up
++    public byte[] processCmd(int cmd, int param1, int param2, byte[] send_buf, int length) {
++        try {
++            if (cmd == 999) {
++                Log.d(TAG, "processCmd: 999");
++                return null;
++            }
++            ArrayList<Byte> sendList = new ArrayList<>();
++            if (send_buf != null) {
++                for (byte b : send_buf) {
++                    sendList.add(Byte.valueOf(b));
++                }
++            }
++            if (send_buf == null) {
++                Log.d(TAG, "FingerprintService send_buf = " + send_buf);
++            }
++            IIfaa iIfaaDaemon = IIfaa.getService();
++            if (iIfaaDaemon == null) {
++                Log.d(TAG, "processCmd: no iIfaaDaemon!");
++                return null;
++            }
++            ArrayList<Byte> resultList = iIfaaDaemon.processCmd(cmd, param1, param2, sendList, length);
++            int n = resultList.size();
++            Log.d(TAG, "FingerprintService result length n = " + n);
++            if (n == 0) {
++                return null;
++            }
++            byte[] result = new byte[n];
++            for (int i = 0; i < n; i++) {
++                result[i] = resultList.get(i).byteValue();
++            }
++            return result;
++        } catch (Exception e) {
++            e.printStackTrace();
++            return null;
++        }
++    };
++
+     @Override
+     public void dump(@NonNull PrintWriter pw, @NonNull String[] args) {
+         pw.println("mSensorProps=(" + mSensorProps + ")");
+@@ -1347,10 +1393,17 @@ public class UdfpsController implements DozeReceiver, Dumpable {
+                 view.configureDisplay(() -> dispatchOnUiReady(requestId));
+             }
+         }
++        if(SystemProperties.get("ro.vendor.build.fingerprint").contains("nubia/NX669")) {
++          processCmd(13, 0, 0, new byte[0], 0);
++        }
+ 
+         for (Callback cb : mCallbacks) {
+             cb.onFingerDown();
+         }
++        if(SystemProperties.get("ro.vendor.build.fingerprint").contains("nubia/NX669")) {
++          processCmd(14, 0, 0, new byte[0], 0);
++        }
++
+     }
+ 
+     private void onFingerUp(long requestId, @NonNull UdfpsView view) {
+@@ -1401,6 +1454,10 @@ public class UdfpsController implements DozeReceiver, Dumpable {
+                     mFingerprintManager.onPointerUp(requestId, mSensorProps.sensorId);
+                 }
+             }
++        if(SystemProperties.get("ro.vendor.build.fingerprint").contains("nubia/NX669")) {
++          processCmd(15, 0, 0, new byte[0], 0);
++        }
++
+             for (Callback cb : mCallbacks) {
+                 cb.onFingerUp();
+             }
+diff --git a/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsView.kt b/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsView.kt
+index ebd06001..a033fb01 100644
+--- a/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsView.kt
++++ b/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsView.kt
+@@ -43,6 +43,8 @@ import vendor.xiaomi.hardware.fingerprintextension.V1_0.IXiaomiFingerprint
+ import android.os.Handler
+ import android.os.HandlerThread
+ 
++import vendor.nubia.ifaa.V1_0.IIfaa
++
+ private const val TAG = "UdfpsView"
+ 
+ /**
+@@ -236,6 +238,10 @@ class UdfpsView(
+     private val handlerThread = HandlerThread("UDFPS").also { it.start() }
+     val myHandler = Handler(handlerThread.looper)
+ 
++    // This file contain current hbm value
++    val nubiaHbmState = "/sys/kernel/lcd_enhance/hbm_state"
++    var hasNubiaHbm = File(nubiaHbmState).exists()
++
+     fun configureDisplay(onDisplayConfigured: Runnable) {
+         isDisplayConfigured = true
+         animationViewController?.onDisplayConfiguring()
+@@ -312,6 +318,11 @@ class UdfpsView(
+                 }, 600)
+             }, 200)
+         }
++          if(hasNubiaHbm) {
++            Log.d("PHH-Enroll", "Nubia scenario in UdfpsView reached!")
++            File(nubiaHbmState).writeText("4095")
++          }
++
+     }
+ 
+     fun unconfigureDisplay() {
+@@ -356,6 +367,9 @@ class UdfpsView(
+         } else if(hasXiaomiLhbm) {
+             IXiaomiFingerprint.getService().extCmd(android.os.SystemProperties.getInt("persist.phh.xiaomi.fod.enrollment.id", 4), 0);
+             ITouchFeature.getService().setTouchMode(0, 10, 0);
++        } else if(hasNubiaHbm) {
++            Log.d("PHH-Enroll", "Nubia Restore brightness")
++            File(nubiaHbmState).writeText(File("/sys/class/backlight/panel0-backlight/brightness").readText())
+         } else {
+             dimUpdate(0.0f)
+         }
+-- 
+2.40.1
+
