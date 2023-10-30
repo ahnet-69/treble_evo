@@ -1,4 +1,4 @@
-From 5348d139504e24766f7b60404db183a48ee4b807 Mon Sep 17 00:00:00 2001
+From 89ede0622f0854081a1a2aa044e8904ba3c2d389 Mon Sep 17 00:00:00 2001
 From: ExactExampl <exactxmpl@pixelexperience.org>
 Date: Tue, 11 Oct 2022 12:38:00 +0300
 Subject: [PATCH] Conditionally revert "Block Binder thread until incoming call
@@ -42,5 +42,5 @@ index df96af5..d48bfcb 100644
  
          @Override
 -- 
-2.42.0
+2.40.1
 

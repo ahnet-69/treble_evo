@@ -1,4 +1,4 @@
-From afe30f975f9c6ddf68565ed57fa97db058b87d35 Mon Sep 17 00:00:00 2001
+From e8b03dc5628987bf4de4b6e070008f900d4525f7 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Wed, 25 Oct 2023 07:30:45 -0400
 Subject: [PATCH] UDFPS Don't crash if we can't find UDFPS props
@@ -8,10 +8,10 @@ Subject: [PATCH] UDFPS Don't crash if we can't find UDFPS props
  1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/services/core/java/com/android/server/biometrics/AuthService.java b/services/core/java/com/android/server/biometrics/AuthService.java
-index 09183b2a..3a5ee085 100644
+index 2a6ff62c..e850e885 100644
 --- a/services/core/java/com/android/server/biometrics/AuthService.java
 +++ b/services/core/java/com/android/server/biometrics/AuthService.java
-@@ -1022,7 +1022,13 @@ public class AuthService extends SystemService {
+@@ -1023,7 +1023,13 @@ public class AuthService extends SystemService {
                  getWorkaroundSensorProps(getContext());
  
          boolean isUdfps = !ArrayUtils.isEmpty(udfpsProps);

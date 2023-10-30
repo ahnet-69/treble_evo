@@ -22,5 +22,5 @@ index 82801f3..e05341b 100644
  
  bool IsVndkInSystemNamespace() {
 -- 
-2.34.1
+2.25.1
 

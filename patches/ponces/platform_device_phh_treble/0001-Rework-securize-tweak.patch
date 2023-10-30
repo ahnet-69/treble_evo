@@ -37,7 +37,7 @@ index 5dc493f..9ea5f8b 100644
 +    copyprop ro.product.build.fingerprint ro.vendor.build.fingerprint
      copyprop ro.build.device ro.vendor.product.device
      copyprop ro.product.system.device ro.vendor.product.device
-+    copyprop ro.voltage.device ro.product.vendor.device
++    copyprop org.evolution.device ro.product.vendor.device
 +    copyprop ro.product.system_ext.device ro.vendor.product.device
 +    copyprop ro.product.product.device ro.vendor.product.device
 +    copyprop ro.product.system_ext.device ro.product.vendor.device

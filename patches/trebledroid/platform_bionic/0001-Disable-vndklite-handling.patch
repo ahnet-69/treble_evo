@@ -32,5 +32,5 @@ index 17b574fc1..c863f8ea6 100644
    size_t insert_pos = ld_config_file_vndk.find_last_of('.');
    if (insert_pos == std::string::npos) {
 -- 
-2.34.1
+2.25.1
 

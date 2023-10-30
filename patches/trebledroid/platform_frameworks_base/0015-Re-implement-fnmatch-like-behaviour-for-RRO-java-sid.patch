@@ -1,4 +1,4 @@
-From dc14c5802e038242e59aa6aa0e5bcdc5f17e1e49 Mon Sep 17 00:00:00 2001
+From baaeeffe18b6882dd8ef989dc90198702bb1850c Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Sun, 25 Oct 2020 23:57:26 +0100
 Subject: [PATCH] Re-implement fnmatch-like behaviour for RRO java-side
@@ -7,9 +7,9 @@ T: Also apply to FrameworkParsingPackageUtils (@PeterCxy)
 
 Change-Id: Id38292a9a1453aa87b8401c1fdb390fa4e63c7d1
 ---
- .../android/content/pm/PackageParser.java     | 13 +++++++++--
- .../parsing/FrameworkParsingPackageUtils.java | 22 +++++++++----------
- 2 files changed, 22 insertions(+), 13 deletions(-)
+ .../android/content/pm/PackageParser.java     | 13 ++++++++--
+ .../parsing/FrameworkParsingPackageUtils.java | 25 +++++++++----------
+ 2 files changed, 23 insertions(+), 15 deletions(-)
 
 diff --git a/core/java/android/content/pm/PackageParser.java b/core/java/android/content/pm/PackageParser.java
 index 713a8a36..fb1e58e4 100644
@@ -36,13 +36,19 @@ index 713a8a36..fb1e58e4 100644
          }
          return true;
 diff --git a/core/java/android/content/pm/parsing/FrameworkParsingPackageUtils.java b/core/java/android/content/pm/parsing/FrameworkParsingPackageUtils.java
-index b75ba82a..fb6f1922 100644
+index b75ba82a..31697616 100644
 --- a/core/java/android/content/pm/parsing/FrameworkParsingPackageUtils.java
 +++ b/core/java/android/content/pm/parsing/FrameworkParsingPackageUtils.java
-@@ -214,17 +214,17 @@ public class FrameworkParsingPackageUtils {
+@@ -1,3 +1,4 @@
++/core/java/android/content/pm/parsing/FrameworkParsingPackageUtils.java
+ /*
+  * Copyright (C) 2022 The Android Open Source Project
+  *
+@@ -213,19 +214,17 @@ public class FrameworkParsingPackageUtils {
+             return false;
          }
          for (int i = 0; i < propNames.length; i++) {
-             final String currValue = SystemProperties.get(propNames[i]);
+-            final String currValue = SystemProperties.get(propNames[i]);
 -            // 1. Make sure prop is set.
 -            if (currValue == null) {
 -                return false;
@@ -54,6 +60,7 @@ index b75ba82a..fb6f1922 100644
 -            // 3. Check if prop is equal to expected value.
 -            if (!currValue.equals(propValues[i])) {
 -                return false;
+-            }
 +            final String value = propValues[i];
 +            if(value.startsWith("+")) {
 +                final java.util.regex.Pattern regex = java.util.regex.Pattern.compile(value.substring(1, value.length()).replace("*", ".*"));
@@ -65,9 +72,9 @@ index b75ba82a..fb6f1922 100644
 +                if(!value.equals(currValue)) {
 +                    return false;
 +                }
-             }
          }
          return true;
+     }
 -- 
 2.40.1
 

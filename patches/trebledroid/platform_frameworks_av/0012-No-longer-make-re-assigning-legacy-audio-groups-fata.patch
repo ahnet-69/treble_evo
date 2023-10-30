@@ -28,5 +28,5 @@ index 7d6a3087c3..356ca7645c 100644
              }
              addSupportedAttributesToGroup(group, volumeGroup, strategy);
 -- 
-2.34.1
+2.25.1
 
