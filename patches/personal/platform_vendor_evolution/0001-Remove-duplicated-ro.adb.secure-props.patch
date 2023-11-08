@@ -1,28 +1,29 @@
-From 8011eb984ea4552ce838c0c6eb0ebc4a0f5b0bec Mon Sep 17 00:00:00 2001
+From 1c4c7abf5f8f99f0d7648f32961577b02d8027be Mon Sep 17 00:00:00 2001
 From: ahnet-69 <syedmusicrealise@gmail.com>
 Date: Wed, 18 Oct 2023 14:18:44 +0500
 Subject: [PATCH] Remove duplicated ro.adb.secure props
 
 I am not even sure how it errors but doing this somehow fixes it
 ---
- config/common.mk | 6 ------
- 1 file changed, 6 deletions(-)
+ config/common.mk | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
 diff --git a/config/common.mk b/config/common.mk
-index 3012416..3bc7c1a 100644
+index bda1929..8cdc831 100644
 --- a/config/common.mk
 +++ b/config/common.mk
-@@ -77,13 +77,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
+@@ -71,13 +71,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
      drm.service.enabled=true \
      media.mediadrmservice.enable=true
  
 -ifeq ($(TARGET_BUILD_VARIANT),eng)
 -# Disable ADB authentication
- PRODUCT_SYSTEM_DEFAULT_PROPERTIES += ro.adb.secure=0
+-PRODUCT_SYSTEM_PROPERTIES += ro.adb.secure=0
 -else
 -# Enable ADB authentication
--PRODUCT_SYSTEM_DEFAULT_PROPERTIES += ro.adb.secure=1
+-PRODUCT_SYSTEM_PROPERTIES += ro.adb.secure=1
 -endif
++PRODUCT_SYSTEM_DEFAULT_PROPERTIES += ro.adb.secure=0
  
  ifneq ($(TARGET_BUILD_VARIANT),eng)
  # Disable extra StrictMode features on all non-engineering builds
