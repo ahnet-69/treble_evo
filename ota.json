@@ -1,3 +1,16 @@
 {
-
+  "version": "v8.0.2 20231111",
+  "date": "1699621608",
+  "variants": [
+    {
+      "name": "treble_arm64_bgN",
+      "size": "1763322836",
+      "url": "https://github.com/ahnet-69/treble_evo/releases/download/v8.0.2-20231111/evolution_arm64_bgN-8.0.2-unofficial-20231111.img.xz"
+    },
+    {
+      "name": "treble_arm64_bgN_slim",
+      "size": "1385307680",
+      "url": "https://github.com/ahnet-69/treble_evo/releases/download/v8.0.2-20231111/evolution_arm64_bgN_slim-8.0.2-unofficial-20231111.img.xz"
+    }
+  ]
 }
