@@ -1,16 +1,16 @@
 {
-  "version": "v8.0.2 20231112",
-  "date": "1699779865",
+  "version": "v8.2 20240124",
+  "date": "1706036750",
   "variants": [
     {
       "name": "treble_arm64_bgN",
-      "size": "1764080140",
-      "url": "https://github.com/ahnet-69/treble_evo/releases/download/v8.0.2-20231112/evolution_arm64_bgN-8.0.2-unofficial-20231112.img.xz"
+      "size": "1816766260",
+      "url": "https://github.com/ahnet-69/treble_evo/releases/download/v8.2-20240124/evolution_arm64_bgN-8.2-unofficial-20240124.img.xz"
     },
     {
       "name": "treble_arm64_bgN_slim",
-      "size": "1386038868",
-      "url": "https://github.com/ahnet-69/treble_evo/releases/download/v8.0.2-20231112/evolution_arm64_bgN_slim-8.0.2-unofficial-20231112.img.xz"
+      "size": "1331505348",
+      "url": "https://github.com/ahnet-69/treble_evo/releases/download/v8.2-20240124/evolution_arm64_bgN_slim-8.2-unofficial-20240124.img.xz"
     }
   ]
 }
