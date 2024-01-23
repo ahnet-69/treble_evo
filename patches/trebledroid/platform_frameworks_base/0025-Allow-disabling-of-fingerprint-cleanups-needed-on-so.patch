@@ -1,4 +1,4 @@
-From a671ad1edf6438e326397d5c69ca1cc58d5e7c89 Mon Sep 17 00:00:00 2001
+From 56e0932203c83d029dab3e14d7541febbd390066 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Sat, 2 Apr 2022 18:04:01 -0400
 Subject: [PATCH] Allow disabling of fingerprint cleanups, needed on some
@@ -9,21 +9,21 @@ Subject: [PATCH] Allow disabling of fingerprint cleanups, needed on some
  1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/services/core/java/com/android/server/biometrics/sensors/fingerprint/hidl/Fingerprint21.java b/services/core/java/com/android/server/biometrics/sensors/fingerprint/hidl/Fingerprint21.java
-index 63e4b3ae..891d973b 100644
+index 431f56d39..d7280181e 100644
 --- a/services/core/java/com/android/server/biometrics/sensors/fingerprint/hidl/Fingerprint21.java
 +++ b/services/core/java/com/android/server/biometrics/sensors/fingerprint/hidl/Fingerprint21.java
-@@ -744,9 +744,8 @@ public class Fingerprint21 implements IHwBinder.DeathRecipient, ServiceProvider
+@@ -750,9 +750,8 @@ public class Fingerprint21 implements IHwBinder.DeathRecipient, ServiceProvider
  
      private void scheduleInternalCleanup(int userId,
              @Nullable ClientMonitorCallback callback) {
 -        if (!mCleanup) {
 -            return;
 -        }
-+       final boolean mNocleanup = android.os.SystemProperties.getBoolean("persist.sys.phh.fingerprint.nocleanup", false);
-+       if(mNocleanup) return;
++	final boolean mNocleanup = android.os.SystemProperties.getBoolean("persist.sys.phh.fingerprint.nocleanup", false);
++	if(mNocleanup) return;
          mHandler.post(() -> {
              scheduleUpdateActiveUserWithoutHandler(userId);
  
 -- 
-2.40.1
+2.34.1
 

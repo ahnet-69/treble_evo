@@ -1,4 +1,4 @@
-From 1600492432074df3a62d721b4380c114c6d0662c Mon Sep 17 00:00:00 2001
+From 7cbd262cb3589b10116705b4d20ac860cd1db177 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Sun, 18 Dec 2022 18:20:40 -0500
 Subject: [PATCH] FOD support for Asus, Samsung recent Xiaomi and RedMagic 8
@@ -25,12 +25,12 @@ Change-Id: Ibd0f9ea8fba584a38c060fd9271549a5e106b4eb
  7 files changed, 578 insertions(+), 27 deletions(-)
 
 diff --git a/packages/SystemUI/Android.bp b/packages/SystemUI/Android.bp
-index 3de183158..4bf60b878 100644
+index b73d16d5f..7dde3b645 100644
 --- a/packages/SystemUI/Android.bp
 +++ b/packages/SystemUI/Android.bp
-@@ -199,6 +199,10 @@ android_library {
+@@ -203,6 +203,10 @@ android_library {
+         "LowLightDreamLib",
          "motion_tool_lib",
-         "bcsmartspace-google",
          "vendor.lineage.powershare-V1.0-java",
 +        "vendor.goodix.hardware.biometrics.fingerprint-V2.1-java",
 +        "vendor.xiaomi.hw.touchfeature-V1.0-java",
@@ -40,10 +40,10 @@ index 3de183158..4bf60b878 100644
      manifest: "AndroidManifest.xml",
      additional_manifests: ["EvolutionManifest.xml"],
 diff --git a/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsController.java b/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsController.java
-index c3a81db92..3788e6dda 100644
+index 6e1faaa32..9b783e24f 100644
 --- a/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsController.java
 +++ b/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsController.java
-@@ -53,6 +53,7 @@ import android.os.Handler;
+@@ -54,6 +54,7 @@ import android.os.Handler;
  import android.os.PowerManager;
  import android.os.Process;
  import android.os.Trace;
@@ -51,7 +51,7 @@ index c3a81db92..3788e6dda 100644
  import android.os.UserHandle;
  import android.os.VibrationAttributes;
  import android.os.VibrationEffect;
-@@ -119,9 +120,13 @@ import java.util.HashSet;
+@@ -124,9 +125,13 @@ import java.util.HashSet;
  import java.util.Optional;
  import java.util.Set;
  import java.util.concurrent.Executor;
@@ -65,7 +65,7 @@ index c3a81db92..3788e6dda 100644
  
  /**
   * Shows and hides the under-display fingerprint sensor (UDFPS) overlay, handles UDFPS touch events,
-@@ -264,6 +269,46 @@ public class UdfpsController implements DozeReceiver, Dumpable {
+@@ -280,6 +285,46 @@ public class UdfpsController implements DozeReceiver, Dumpable {
              mScreenOn = false;
          }
      };
@@ -112,7 +112,7 @@ index c3a81db92..3788e6dda 100644
  
      @Override
      public void dump(@NonNull PrintWriter pw, @NonNull String[] args) {
-@@ -1332,10 +1377,17 @@ public class UdfpsController implements DozeReceiver, Dumpable {
+@@ -1399,10 +1444,17 @@ public class UdfpsController implements DozeReceiver, Dumpable {
                  view.configureDisplay(() -> dispatchOnUiReady(requestId));
              }
          }
@@ -130,7 +130,7 @@ index c3a81db92..3788e6dda 100644
      }
  
      private void onFingerUp(long requestId, @NonNull UdfpsView view) {
-@@ -1386,6 +1438,10 @@ public class UdfpsController implements DozeReceiver, Dumpable {
+@@ -1453,6 +1505,10 @@ public class UdfpsController implements DozeReceiver, Dumpable {
                      mFingerprintManager.onPointerUp(requestId, mSensorProps.sensorId);
                  }
              }
@@ -142,10 +142,10 @@ index c3a81db92..3788e6dda 100644
                  cb.onFingerUp();
              }
 diff --git a/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsControllerOverlay.kt b/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsControllerOverlay.kt
-index 909fcbf47..86adada21 100644
+index bca039f00..0e7315a90 100644
 --- a/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsControllerOverlay.kt
 +++ b/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsControllerOverlay.kt
-@@ -126,10 +126,8 @@ class UdfpsControllerOverlay @JvmOverloads constructor(
+@@ -135,10 +135,8 @@ class UdfpsControllerOverlay @JvmOverloads constructor(
          gravity = android.view.Gravity.TOP or android.view.Gravity.LEFT
          layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
          flags = (Utils.FINGERPRINT_OVERLAY_LAYOUT_PARAM_FLAGS or
@@ -158,7 +158,7 @@ index 909fcbf47..86adada21 100644
          privateFlags = WindowManager.LayoutParams.PRIVATE_FLAG_TRUSTED_OVERLAY
          dimAmount = 0.0f
          // Avoid announcing window title.
-@@ -196,6 +194,9 @@ class UdfpsControllerOverlay @JvmOverloads constructor(
+@@ -205,6 +203,9 @@ class UdfpsControllerOverlay @JvmOverloads constructor(
                      windowManager.addView(this, coreLayoutParams.updateDimensions(animation))
                      sensorRect = sensorBounds
                      touchExplorationEnabled = accessibilityManager.isTouchExplorationEnabled
@@ -458,10 +458,10 @@ index ef7fcc954..3949d7baa 100644
      }
  }
 diff --git a/services/core/Android.bp b/services/core/Android.bp
-index 10fcbfffd..23d5e7d5b 100644
+index cee2d4a6d..1fae2afb4 100644
 --- a/services/core/Android.bp
 +++ b/services/core/Android.bp
-@@ -190,6 +190,11 @@ java_library_static {
+@@ -192,6 +192,11 @@ java_library_static {
          // HIDL
          "vendor.mediatek.hardware.mtkpower-V1.1-java",
          "vendor.samsung.hardware.sysinput-V1.2-java",
@@ -474,7 +474,7 @@ index 10fcbfffd..23d5e7d5b 100644
      javac_shard_size: 50,
      javacflags: [
 diff --git a/services/core/java/com/android/server/biometrics/AuthService.java b/services/core/java/com/android/server/biometrics/AuthService.java
-index 3df521a60..69b351fc3 100644
+index 3df521a60..8f37ab0f5 100644
 --- a/services/core/java/com/android/server/biometrics/AuthService.java
 +++ b/services/core/java/com/android/server/biometrics/AuthService.java
 @@ -78,6 +78,25 @@ import java.util.ArrayList;
@@ -827,26 +827,20 @@ index 3df521a60..69b351fc3 100644
 +    }
  }
 diff --git a/services/core/java/com/android/server/biometrics/sensors/fingerprint/FingerprintService.java b/services/core/java/com/android/server/biometrics/sensors/fingerprint/FingerprintService.java
-index ece35c522..8c20b9e1b 100644
+index 5ce0c8b38..df99478da 100644
 --- a/services/core/java/com/android/server/biometrics/sensors/fingerprint/FingerprintService.java
 +++ b/services/core/java/com/android/server/biometrics/sensors/fingerprint/FingerprintService.java
-@@ -873,7 +873,6 @@ public class FingerprintService extends SystemService {
+@@ -885,8 +885,9 @@ public class FingerprintService extends SystemService {
+                         filteredInstances = filterAvailableHalInstances(hidlSensors, aidlSensors);
  
-             mRegistry.registerAll(() -> {
                  final List<ServiceProvider> providers = new ArrayList<>();
--                providers.addAll(getHidlProviders(hidlSensors));
-                 List<String> aidlSensors = new ArrayList<>();
-                 final String[] instances = mAidlInstanceNameSupplier.get();
-                 if (instances != null) {
-@@ -881,6 +880,8 @@ public class FingerprintService extends SystemService {
-                 }
-                 providers.addAll(getAidlProviders(
-                         Utils.filterAvailableHalInstances(getContext(), aidlSensors)));
+-                providers.addAll(getHidlProviders(filteredInstances.first));
+                 providers.addAll(getAidlProviders(filteredInstances.second));
 +                if (providers.isEmpty())
-+                    providers.addAll(getHidlProviders(hidlSensors));
++                    providers.addAll(getHidlProviders(filteredInstances.first));
+ 
                  return providers;
              });
-         }
 -- 
-2.40.1
+2.34.1
 

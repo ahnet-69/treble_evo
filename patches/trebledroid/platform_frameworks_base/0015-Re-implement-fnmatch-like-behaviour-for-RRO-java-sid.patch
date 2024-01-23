@@ -1,4 +1,4 @@
-From 6b16b192f435621fee2cc040299065a20b596647 Mon Sep 17 00:00:00 2001
+From 5abb4076615e666ffce880e79612dadd5cd57e14 Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Sun, 25 Oct 2020 23:57:26 +0100
 Subject: [PATCH] Re-implement fnmatch-like behaviour for RRO java-side
@@ -7,28 +7,19 @@ T: Also apply to FrameworkParsingPackageUtils (@PeterCxy)
 
 Change-Id: Id38292a9a1453aa87b8401c1fdb390fa4e63c7d1
 ---
- .../parsing/FrameworkParsingPackageUtils.java | 22 +++++++++----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ .../pm/parsing/FrameworkParsingPackageUtils.java   | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
 diff --git a/core/java/android/content/pm/parsing/FrameworkParsingPackageUtils.java b/core/java/android/content/pm/parsing/FrameworkParsingPackageUtils.java
-index b75ba82ad..fb6f1922b 100644
+index 9ddfa1559..679a2a5fa 100644
 --- a/core/java/android/content/pm/parsing/FrameworkParsingPackageUtils.java
 +++ b/core/java/android/content/pm/parsing/FrameworkParsingPackageUtils.java
-@@ -214,17 +214,17 @@ public class FrameworkParsingPackageUtils {
-         }
-         for (int i = 0; i < propNames.length; i++) {
-             final String currValue = SystemProperties.get(propNames[i]);
--            // 1. Make sure prop is set.
--            if (currValue == null) {
--                return false;
--            }
--            // 2. Check next prop if expected value is a wildcard.
--            if ("*".equals(propValues[i])) {
--                continue;
--            }
--            // 3. Check if prop is equal to expected value.
--            if (!currValue.equals(propValues[i])) {
--                return false;
+@@ -217,8 +217,18 @@ public class FrameworkParsingPackageUtils {
+             final String expectedValue = propValues[i];
+             final String currValue = SystemProperties.get(propName);
+ 
+-            if (currValue == null) return false;
+-            if (!"*".equals(expectedValue) && !currValue.equals(expectedValue)) return false;
 +            final String value = propValues[i];
 +            if(value.startsWith("+")) {
 +                final java.util.regex.Pattern regex = java.util.regex.Pattern.compile(value.substring(1, value.length()).replace("*", ".*"));
@@ -40,9 +31,10 @@ index b75ba82ad..fb6f1922b 100644
 +                if(!value.equals(currValue)) {
 +                    return false;
 +                }
-             }
++            }
          }
          return true;
+     }
 -- 
-2.40.1
+2.34.1
 

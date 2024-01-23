@@ -19,3 +19,6 @@ PRODUCT_SYSTEM_DEFAULT_PROPERTIES += \
 
 PRODUCT_PACKAGES += \
     GCamGOPrebuilt-V3
+
+DEVICE_PACKAGE_OVERLAYS += \
+    device/phh/treble/overlay-evolution

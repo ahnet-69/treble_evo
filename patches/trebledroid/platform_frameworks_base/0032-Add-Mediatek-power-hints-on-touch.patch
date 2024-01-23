@@ -1,4 +1,4 @@
-From bc35098ba4a985500dcf4d7b092a58fc6b43b70c Mon Sep 17 00:00:00 2001
+From 2ff789f73b0442c623eccd922c4f4c7068086b5c Mon Sep 17 00:00:00 2001
 From: Pierre-Hugues Husson <phh@phh.me>
 Date: Sat, 17 Jun 2023 08:31:55 -0400
 Subject: [PATCH] Add Mediatek power hints on touch
@@ -27,12 +27,12 @@ Change-Id: I9f1eac5a20b98920a5d0c8204fe4d165ba069f5a
  2 files changed, 52 insertions(+), 1 deletion(-)
 
 diff --git a/services/core/Android.bp b/services/core/Android.bp
-index 2b23b936..b58f6494 100644
+index 55320bd17..cee2d4a6d 100644
 --- a/services/core/Android.bp
 +++ b/services/core/Android.bp
-@@ -188,7 +188,9 @@ java_library_static {
-         "ImmutabilityAnnotation",
+@@ -189,7 +189,9 @@ java_library_static {
          "securebox",
+         "vendor.aospa.biometrics.face",
          "vendor.aac.hardware.richtap.vibrator",
 -        "vendor.samsung.hardware.sysinput-V1.2-java", // HIDL
 +        // HIDL
@@ -42,10 +42,10 @@ index 2b23b936..b58f6494 100644
      javac_shard_size: 50,
      javacflags: [
 diff --git a/services/core/java/com/android/server/wm/DisplayPolicy.java b/services/core/java/com/android/server/wm/DisplayPolicy.java
-index c4cd1b4b..a75ba406 100644
+index 220d96c77..46d64ad1c 100644
 --- a/services/core/java/com/android/server/wm/DisplayPolicy.java
 +++ b/services/core/java/com/android/server/wm/DisplayPolicy.java
-@@ -208,6 +208,9 @@ public class DisplayPolicy {
+@@ -236,6 +236,9 @@ public class DisplayPolicy {
       */
      private boolean mRemoteInsetsControllerControlsSystemBars;
  
@@ -55,7 +55,7 @@ index c4cd1b4b..a75ba406 100644
      StatusBarManagerInternal getStatusBarManagerInternal() {
          synchronized (mServiceAcquireLock) {
              if (mStatusBarManagerInternal == null) {
-@@ -412,6 +415,19 @@ public class DisplayPolicy {
+@@ -496,6 +499,19 @@ public class DisplayPolicy {
              mScreenOnEarly = true;
              mScreenOnFully = true;
          }
@@ -73,9 +73,9 @@ index c4cd1b4b..a75ba406 100644
 +            mOldMtkPerf = null;
 +        }
  
-         final Looper looper = UiThread.getHandler().getLooper();
-         mHandler = new PolicyHandler(looper);
-@@ -496,6 +512,17 @@ public class DisplayPolicy {
+         if (mPerf != null) {
+             SCROLL_BOOST_SS_ENABLE = Boolean.parseBoolean(mPerf.perfGetProp("vendor.perf.gestureflingboost.enable", "false"));
+@@ -586,6 +602,17 @@ public class DisplayPolicy {
                          mService.mPowerManagerInternal.setPowerBoost(
                                  Boost.INTERACTION, duration);
                      }
@@ -93,7 +93,7 @@ index c4cd1b4b..a75ba406 100644
                  }
  
                  @Override
-@@ -514,6 +541,28 @@ public class DisplayPolicy {
+@@ -604,6 +631,28 @@ public class DisplayPolicy {
                      if (listener != null) {
                          listener.onTouchStart();
                      }
@@ -121,7 +121,7 @@ index c4cd1b4b..a75ba406 100644
 +                    }
                  }
  
-                 @Override
+                     @Override
 -- 
-2.40.1
+2.34.1
 

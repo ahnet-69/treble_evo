@@ -1,4 +1,4 @@
-From 80dc17ff3a339deb49a46fbe24d922b242ee7153 Mon Sep 17 00:00:00 2001
+From 679747f83df981a4ed3dcaf64f158c6b7db2c122 Mon Sep 17 00:00:00 2001
 From: ChonDoit <thphantomblog@gmail.com>
 Date: Thu, 24 Aug 2023 15:58:15 -0300
 Subject: [PATCH] Fix brightness slider curve for some devices
@@ -22,5 +22,5 @@ index 68bb378b8..8cc192f4f 100644
      public static final int GAMMA_SPACE_MIN = 0;
      public static final int GAMMA_SPACE_MAX = sysUseLowGamma ? 255 : 65535;
 -- 
-2.40.1
+2.34.1
 
