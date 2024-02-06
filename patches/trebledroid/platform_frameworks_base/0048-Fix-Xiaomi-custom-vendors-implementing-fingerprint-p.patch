@@ -1,0 +1,30 @@
+From 33a2f2bf7f0c7d2c2515781ede0af27b72d0855c Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Fri, 26 Jan 2024 06:40:49 -0500
+Subject: [PATCH] Fix Xiaomi custom vendors implementing fingerprint properly
+
+---
+ .../src/com/android/systemui/biometrics/UdfpsView.kt       | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsView.kt b/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsView.kt
+index 3949d7baa..6ff8a2e5a 100644
+--- a/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsView.kt
++++ b/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsView.kt
+@@ -236,7 +236,12 @@ class UdfpsView(
+     var fodFileObserver: FileObserver? = null
+ 
+     val xiaomiDispParam = "/sys/class/mi_display/disp-DSI-0/disp_param"
+-    var hasXiaomiLhbm = File(xiaomiDispParam).exists()
++    var hasXiaomiLhbm = try {
++            val xiaomiFingerprintService = IXiaomiFingerprint.getService()
++            File(xiaomiDispParam).exists() && xiaomiFingerprintService != null
++        } catch(e: Exception) {
++            false
++        }
+ 
+     private val handlerThread = HandlerThread("UDFPS").also { it.start() }
+     val myHandler = Handler(handlerThread.looper)
+-- 
+2.34.1
+

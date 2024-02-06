@@ -1,0 +1,25 @@
+From dedb4f7af0a5301c97475f5063439e0c7b7dbfe7 Mon Sep 17 00:00:00 2001
+From: Pierre-Hugues Husson <phh@phh.me>
+Date: Mon, 29 Jan 2024 17:06:45 -0500
+Subject: [PATCH] Typo in observing Samsung brightness
+
+---
+ .../SystemUI/src/com/android/systemui/biometrics/UdfpsView.kt   | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsView.kt b/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsView.kt
+index 2603af3ab..f22b0f2cb 100644
+--- a/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsView.kt
++++ b/packages/SystemUI/src/com/android/systemui/biometrics/UdfpsView.kt
+@@ -359,7 +359,7 @@ class UdfpsView(
+             };
+             fodFileObserver?.startWatching();
+         } else if (hasSamsungMask) {
+-            fodFileObserver = object: FileObserver(asusGhbmOnAchieved, FileObserver.MODIFY) {
++            fodFileObserver = object: FileObserver(samsungActualMaskBrightness, FileObserver.MODIFY) {
+                 override fun onEvent(event: Int, path: String): Unit {
+                     Log.d("PHH-Enroll", "samsung mask brightness event")
+                     try {
+-- 
+2.34.1
+

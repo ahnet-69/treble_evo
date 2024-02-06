@@ -4,15 +4,15 @@ Date: Tue, 23 Jan 2024 11:52:17 +0000
 Subject: [PATCH] Add Maintainer Strings
 
 ---
- .../apps/Settings/res/values/strings.xml        | 17 +++++++++++++++++
+ .../apps/Settings/res/values/evolution_strings.xml        | 17 +++++++++++++++++
  1 file changed, 17 insertions(+)
- create mode 100644 overlay-evolution/packages/apps/Settings/res/values/strings.xml
+ create mode 100644 overlay-evolution/packages/apps/Settings/res/values/evolution_strings.xml
 
-diff --git a/overlay-evolution/packages/apps/Settings/res/values/strings.xml b/overlay-evolution/packages/apps/Settings/res/values/strings.xml
+diff --git a/overlay-evolution/packages/apps/Settings/res/values/evolution_strings.xml b/overlay-evolution/packages/apps/Settings/res/values/evolution_strings.xml
 new file mode 100644
 index 0000000..f14b444
 --- /dev/null
-+++ b/overlay-evolution/packages/apps/Settings/res/values/strings.xml
++++ b/overlay-evolution/packages/apps/Settings/res/values/evolution_strings.xml
 @@ -0,0 +1,17 @@
 +<?xml version="1.0" encoding="utf-8"?>
 +<!-- Copyright (C) 2019-2021 The Evolution X Project

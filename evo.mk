@@ -21,4 +21,4 @@ PRODUCT_PACKAGES += \
     GCamGOPrebuilt-V3
 
 DEVICE_PACKAGE_OVERLAYS += \
-    device/phh/treble/overlay-evolution
+    $(LOCAL_PATH)/overlay-evolution
